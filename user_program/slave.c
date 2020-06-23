@@ -18,12 +18,12 @@ int main (int argc, char* argv[])
 {
     char buf[BUF_SIZE];
     int i, dev_fd;// the fd for the device and the fd for the input file
-    size_t ret, file_size = 0, data_size = -1, offset;
+    size_t r, file_size = 0, data_size = -1, offs;
     char number[20];
     int num;
     char method[20];
     char ip[20];
-    char file_name[MAX][50];
+    char file_name_o[50], file_name[MAX][50];
     int file_fd[MAX];
     struct timeval start;
     struct timeval end;
@@ -32,10 +32,13 @@ int main (int argc, char* argv[])
 
     strcpy(number, argv[1]);
     num = atoi(number);
+    strcpy(file_name_o, argv[2]);
+
     for (int i = 0; i < num; i++)
-        strcpy(file_name[i], argv[2+i]);
-    strcpy(method, argv[2+num]);
-    strcpy(ip, argv[3+num]);
+      sprintf(file_name[i], "%s_%d", file_name_o, i + 1);
+
+    strcpy(method, argv[3]);
+    strcpy(ip, argv[4]);
 
 
     if( (dev_fd = open("/dev/slave_device", O_RDWR)) < 0) {//should be O_RDWR for PROT_WRITE when mmap()
@@ -62,14 +65,14 @@ int main (int argc, char* argv[])
         {
             case 'f'://fcntl : read()/write()
             do {
-                ret = read(dev_fd, buf, sizeof(buf)); // read from the the device
-                write(file_fd[i], buf, ret); //write to the input file
-                file_size += ret;
-            }while(ret > 0);
+                r = read(dev_fd, buf, sizeof(buf)); // read from the the device
+                write(file_fd[i], buf, r); //write to the input file
+                file_size += r;
+            }while(r > 0);
                 break;
             case 'm'://mmap
                 offs = 0;
-                flag = 1;
+                int flag = 1;
                 while (flag == 1) {
                     r = ioctl(dev_fd, 0x12345678);
                     if (r == 0) {
@@ -81,8 +84,11 @@ int main (int argc, char* argv[])
                     file_add = mmap(NULL, r, PROT_WRITE, MAP_SHARED, file_fd[i], offs);
                     kernel_add = mmap(NULL, r, PROT_READ, MAP_SHARED, dev_fd, offs);
                     memcpy(file_add, kernel_add, r);
+                    munmap(file_add, r);
+                    munmap(kernel_add, r);
                     offs = offs + r;
                 }
+                ioctl(dev_fd, 0x12345680); //default
                 break;
         }
 
