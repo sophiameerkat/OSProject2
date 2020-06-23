@@ -22,17 +22,18 @@ int main (int argc, char* argv[])
 	char buf[BUF_SIZE];
 	int i, dev_fd, file_fd;// the fd for the device and the fd for the input file
 	size_t ret, file_size, offset = 0, tmp;
-	char file_name[MAX][50], method[20];
+	char file_name_o[50], file_name[MAX][50], method[20];
 	char *kernel_address = NULL, *file_address = NULL;
 	struct timeval start;
 	struct timeval end;
 	double trans_time; //calulate the time between the device is opened and it is closed
 
 	int N = atoi(argv[1]);
+	strcpy(file_name_o, argv[2]);
 	for(i = 0; i < N; i++)
-		strcpy(file_name[i], argv[2 + i]);
+		sprintf(file_name[i], "%s_%d", file_name_o, i + 1);
 
-	strcpy(method, argv[2 + N]);
+	strcpy(method, argv[3]);
 
 	if( (dev_fd = open("/dev/master_device", O_RDWR)) < 0)
 	{
@@ -89,9 +90,10 @@ int main (int argc, char* argv[])
 				memcpy(kernel_address, file_address, len);
 				offset += len;
 			  ioctl(dev_fd, 0x12345678, len); //master_IOCTL_MMAP
+				munmap(file_address, MAP_SIZE);
+				munmap(kernel_address, MAP_SIZE);
 			}
 			ioctl(dev_fd, 0x12345680); //default
-			munmap(file_address, MAP_SIZE);
 			break;
 		}
 
@@ -101,7 +103,7 @@ int main (int argc, char* argv[])
 			return 1;
 		}
 	}
-	
+
 	gettimeofday(&end, NULL);
 	trans_time = (end.tv_sec - start.tv_sec)*1000 + (end.tv_usec - start.tv_usec)*0.0001;
 	printf("Transmission time: %lf ms, File size: %lu bytes\n", trans_time, total_file_size / 8);
