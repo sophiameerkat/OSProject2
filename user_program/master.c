@@ -90,7 +90,7 @@ int main (int argc, char* argv[])
 				offset += len;
 			  ioctl(dev_fd, 0x12345678, len); //master_IOCTL_MMAP
 			}
-			ioctl(dev_fd, 0x12345680);
+			ioctl(dev_fd, 0x12345680); //default
 			munmap(file_address, MAP_SIZE);
 			break;
 		}
