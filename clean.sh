@@ -6,7 +6,7 @@ make clean
 rmmod slave_device.ko
 cd ../ksocket
 make clean
-rmmog ksocket.ko
+rmmod ksocket.ko
 cd ../user_program
 make clean
 cd ..
