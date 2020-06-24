@@ -14,9 +14,8 @@ To use it, please:
 </ol>
 
 ```
-./master n input_file mmap
-./slave n output_file fcntl 127.0.0.1
-n: total files
+./master file_num input_filename method
+./slave file_num output_filename method ip
 ```
 
 <b>Note</b> <br>
@@ -30,3 +29,5 @@ Then the input parameter is <b>./master 2 target_file mmap</b> <br>
 Make sure that you are under the path "./user_program" when you execute user programs. <br>
 Though the execution order of user program "master" and "slave" does not matter, <br>
 it is suggested to execute "master" first to get more precise transmission time.
+
+To run demo, go to "demo" folder and execute `sudo ./{method}_{master/slave}_{i}`
