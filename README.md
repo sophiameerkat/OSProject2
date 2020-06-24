@@ -11,12 +11,14 @@ To use it, please:
   <li>Change to super user</li>
   <li>Execute "./compile.sh" to compile codes and install modules</li>
   <li>Follow the input instrutions in the spec, i.e.</li>
-</ol>
+
 
 ```
 ./master file_num input_filename method
 ./slave file_num output_filename method ip
 ```
+  <li>To clean up all the compiled objects, including device and socket, please execute "./clean.sh".</li>
+</ol>  
 
 <b>Note</b> <br>
 We changed the input parameters such that it is simpler and easier for multiple files I/O. <br>
